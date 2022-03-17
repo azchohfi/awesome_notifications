@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 
@@ -164,9 +165,11 @@ class AwesomeNotifications {
       // For web release
     } else {
       if (!AwesomeAssertUtils.isNullOrEmptyOrInvalid(defaultIcon, String)) {
-        // To set a icon on top of notification, is mandatory to user a native resource
-        assert(AwesomeBitmapUtils().getMediaSource(defaultIcon!) ==
+        if (!Platform.isWindows) {
+          // To set a icon on top of notification, is mandatory to user a native resource
+          assert(AwesomeBitmapUtils().getMediaSource(defaultIcon!) ==
             MediaSource.Resource);
+        }
         defaultIconPath = defaultIcon;
       }
     }

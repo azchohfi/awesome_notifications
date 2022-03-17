@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -12,7 +13,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   AwesomeNotifications().initialize(
-    'resource://drawable/res_app_icon',
+    Platform.isWindows ? 
+      'assets/launcher/win_icon.png' :
+      'resource://drawable/res_app_icon',
     [
       NotificationChannel(
           channelGroupKey: 'basic_tests',
