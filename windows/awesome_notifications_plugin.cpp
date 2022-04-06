@@ -65,7 +65,7 @@ class AwesomeNotificationsPlugin : public flutter::Plugin {
 
     static inline bool debug = false;
 
-    AwesomeNotificationsPlugin();
+    AwesomeNotificationsPlugin(flutter::PluginRegistrarWindows *registrar);
 
     void channelMethodInitialize(const flutter::MethodCall<flutter::EncodableValue> &method_call,
         std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
@@ -149,6 +149,11 @@ class AwesomeNotificationsPlugin : public flutter::Plugin {
     void SetChannels(flutter::EncodableList channelsData);
     void SetDefaults(std::string defaultIcon);
 
+    void SetDisplayNameAndIcon(std::string defaultIcon) noexcept;
+
+    // The registrar for this plugin, for accessing the window.
+    flutter::PluginRegistrarWindows *registrar_;
+
     // Called when a method is called on this plugin's channel from Dart.
     void HandleMethodCall(
         const flutter::MethodCall<flutter::EncodableValue> &method_call,
@@ -163,7 +168,7 @@ void AwesomeNotificationsPlugin::RegisterWithRegistrar(
             registrar->messenger(), "awesome_notifications",
             &flutter::StandardMethodCodec::GetInstance());
 
-    auto plugin = std::make_unique<AwesomeNotificationsPlugin>();
+    auto plugin = std::make_unique<AwesomeNotificationsPlugin>(registrar);
 
     channel->SetMethodCallHandler(
         [plugin_pointer = plugin.get()](const auto &call, auto result) {
@@ -173,7 +178,8 @@ void AwesomeNotificationsPlugin::RegisterWithRegistrar(
     registrar->AddPlugin(std::move(plugin));
 }
 
-AwesomeNotificationsPlugin::AwesomeNotificationsPlugin() {}
+AwesomeNotificationsPlugin::AwesomeNotificationsPlugin(flutter::PluginRegistrarWindows *registrar)
+    : registrar_(registrar) {}
 
 AwesomeNotificationsPlugin::~AwesomeNotificationsPlugin() {}
 
@@ -283,7 +289,11 @@ std::wstring ReplaceAll(std::wstring str, const std::wstring& from, const std::w
     return str;
 }
 
-void SetDisplayNameAndIcon(std::string defaultIcon) noexcept
+HWND GetRootWindow(flutter::FlutterView *view) {
+    return ::GetAncestor(view->GetNativeWindow(), GA_ROOT);
+}
+
+void AwesomeNotificationsPlugin::SetDisplayNameAndIcon(std::string defaultIcon) noexcept
 {
     // Not mandatory, but it's highly recommended to specify AppUserModelId
     //SetCurrentProcessExplicitAppUserModelID(L"TestAppId");
@@ -312,7 +322,10 @@ void SetDisplayNameAndIcon(std::string defaultIcon) noexcept
 
     // App name is not mandatory, but it's highly recommended to specify it
     wil::unique_prop_variant propVariantAppName;
-    wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(L"The Toast Demo App");
+    auto hWnd = GetRootWindow(registrar_->GetView());
+    WCHAR title[1024];
+    GetWindowTextW(hWnd, title, 1023);
+    wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(title);
     propVariantAppName.pwszVal = prodName.release();
     propVariantAppName.vt = VT_LPWSTR;
     propertyStore->SetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, propVariantAppName);
