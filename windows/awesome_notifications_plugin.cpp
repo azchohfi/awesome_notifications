@@ -300,6 +300,7 @@ void AwesomeNotificationsPlugin::SetDisplayNameAndIcon(std::string defaultIcon) 
 
     // Icon is mandatory
     winrt::com_ptr<IPropertyStore> propertyStore;
+    // wil::unique_hwnd hWindow{ GetRootWindow(registrar_->GetView()) };
     wil::unique_hwnd hWindow{ GetConsoleWindow() };
 
     SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(&propertyStore));
@@ -322,9 +323,9 @@ void AwesomeNotificationsPlugin::SetDisplayNameAndIcon(std::string defaultIcon) 
 
     // App name is not mandatory, but it's highly recommended to specify it
     wil::unique_prop_variant propVariantAppName;
-    auto hWnd = GetRootWindow(registrar_->GetView());
     WCHAR title[1024];
-    GetWindowTextW(hWnd, title, 1023);
+    //GetWindowTextW(hWindow.get(), title, 1023);
+    GetWindowTextW(GetRootWindow(registrar_->GetView()), title, 1023); // TODO
     wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(title);
     propVariantAppName.pwszVal = prodName.release();
     propVariantAppName.vt = VT_LPWSTR;

@@ -112,6 +112,8 @@ add_library(${PLUGIN_NAME} SHARED
   "utils/JsonUtils.cpp"
   "utils/StringUtils.h"
   "utils/StringUtils.cpp"
+  "utils/HtmlUtils.h"
+  "utils/HtmlUtils.cpp"
   "utils/IntegerUtils.h"
   "utils/IntegerUtils.cpp"
   "utils/MapUtils.h"

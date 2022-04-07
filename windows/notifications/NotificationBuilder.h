@@ -235,115 +235,17 @@ class NotificationBuilder {
             return null;
         }
     }
+    */
 
-    @NonNull
-    public static void createActionButtons(NotificationModel notificationModel, NotificationChannelModel channel, NotificationCompat.Builder builder) {
+    static void CreateActionButtons(const NotificationModel& notificationModel, const NotificationChannelModel& channel, std::wstring& actions);
 
-        if (ListUtils.isNullOrEmpty(notificationModel.actionButtons)) return;
-
-        for (NotificationButtonModel buttonProperties : notificationModel.actionButtons) {
-
-            // If reply is not available, do not show it
-            if (
-                android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.N &&
-                buttonProperties.buttonType == ActionButtonType.InputField
-            ){
-                continue;
-            }
-
-            Intent actionIntent = buildNotificationIntentFromModel(
-                    Definitions.NOTIFICATION_BUTTON_ACTION_PREFIX + "_" + buttonProperties.key,
-                    notificationModel,
-                    channel,
-                    buttonProperties.buttonType == ActionButtonType.DisabledAction ||
-                    buttonProperties.buttonType == ActionButtonType.KeepOnTop ?
-                                    KeepOnTopActionReceiver.class : getNotificationTargetActivityClass()
-            );
-
-            actionIntent.putExtra(Definitions.NOTIFICATION_AUTO_DISMISSIBLE, buttonProperties.autoDismissible);
-            actionIntent.putExtra(Definitions.NOTIFICATION_SHOW_IN_COMPACT_VIEW, buttonProperties.showInCompactView);
-            actionIntent.putExtra(Definitions.NOTIFICATION_ENABLED, buttonProperties.enabled);
-            actionIntent.putExtra(Definitions.NOTIFICATION_BUTTON_TYPE, buttonProperties.buttonType.toString());
-            actionIntent.putExtra(Definitions.NOTIFICATION_BUTTON_KEY, buttonProperties.key);
-
-            PendingIntent actionPendingIntent = null;
-
-            if (buttonProperties.enabled) {
-
-                if (
-                    buttonProperties.buttonType == ActionButtonType.KeepOnTop ||
-                    buttonProperties.buttonType == ActionButtonType.DisabledAction
-                ) {
-
-                    actionPendingIntent = PendingIntent.getBroadcast(
-                            notificationModel.content.id,
-                            actionIntent,
-                            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
-                    );
-
-                } else if (buttonProperties.buttonType == ActionButtonType.InputField) {
-
-                    actionPendingIntent = PendingIntent.getActivity(
-                            notificationModel.content.id,
-                            actionIntent,
-                            PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
-                    );
-
-                } else {
-
-                    actionPendingIntent = PendingIntent.getActivity(
-                            notificationModel.content.id,
-                            actionIntent,
-                            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
-                    );
-                }
-            }
-
-            int iconResource = 0;
-            if (!StringUtils.isNullOrEmpty(buttonProperties.icon)) {
-                iconResource = BitmapUtils.getDrawableResourceId(buttonProperties.icon);
-            }
-
-            if (
-                buttonProperties.buttonType == ActionButtonType.InputField
-            ){
-
-                RemoteInput remoteInput = new RemoteInput.Builder(buttonProperties.key)
-                        .setLabel(buttonProperties.label)
-                        .build();
-
-                NotificationCompat.Action replyAction = new NotificationCompat.Action.Builder(
-                        iconResource, buttonProperties.label, actionPendingIntent)
-                        .addRemoteInput(remoteInput)
-                        .build();
-
-                builder.addAction(replyAction);
-
-            } else {
-
-                builder.addAction(
-                    iconResource,
-                    HtmlCompat.fromHtml(
-                        buttonProperties.isDangerousOption ?
-                            "<font color=\"16711680\">" + buttonProperties.label + "</font>" :
-                            (
-                                buttonProperties.color != null ?
-                                    "<font color=\"" + buttonProperties.color.toString() + "\">" + buttonProperties.label + "</font>":
-                                    buttonProperties.label
-                            ),
-                        HtmlCompat.FROM_HTML_MODE_LEGACY
-                    ),
-                    actionPendingIntent);
-            }
-        }
-    }
-
+    /*
     public static final ConcurrentHashMap<String, List<NotificationMessageModel>> messagingQueue = new ConcurrentHashMap<String, List<NotificationMessageModel>>();
-*/
+    */
  private:
 
 /*
-    private static PendingIntent getPendingActionIntent(NotificationModel notificationModel, NotificationChannelModel channelModel) {
+    static PendingIntent getPendingActionIntent(NotificationModel notificationModel, NotificationChannelModel channelModel) {
         Intent intent = buildNotificationIntentFromModel(
                 Definitions.SELECT_NOTIFICATION,
                 notificationModel,
@@ -358,7 +260,7 @@ class NotificationBuilder {
         return pendingActionIntent;
     }
 
-    private static PendingIntent getPendingDismissIntent(NotificationModel notificationModel, NotificationChannelModel channelModel) {
+    static PendingIntent getPendingDismissIntent(NotificationModel notificationModel, NotificationChannelModel channelModel) {
         Intent deleteIntent = buildNotificationIntentFromModel(
                 Definitions.DISMISSED_NOTIFICATION,
                 notificationModel,
@@ -375,7 +277,7 @@ class NotificationBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private static void updateTrackingExtras(NotificationModel notificationModel, NotificationChannelModel channel, Bundle extras) {
+    static void updateTrackingExtras(NotificationModel notificationModel, NotificationChannelModel channel, Bundle extras) {
         String groupKey = getGroupKey(notificationModel.content, channel);
 
         extras.putInt(Definitions.NOTIFICATION_ID, notificationModel.content.id);
@@ -396,11 +298,11 @@ class NotificationBuilder {
         }
     }
 
-    private static Class<?> getTargetClass(){
+    static Class<?> getTargetClass(){
         return getNotificationTargetActivityClass();
     }
 
-    private static String getButtonInputText(Intent intent, String buttonKey) {
+    static String getButtonInputText(Intent intent, String buttonKey) {
         Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
         if (remoteInput != null) {
             return remoteInput.getCharSequence(buttonKey).toString();
@@ -412,7 +314,7 @@ class NotificationBuilder {
 
     /*
 
-    private static void setCategoryFlags(NotificationModel notificationModel, Notification androidNotification) {
+    static void setCategoryFlags(NotificationModel notificationModel, Notification androidNotification) {
 
         if(notificationModel.content.category != null)
             switch (notificationModel.content.category){
@@ -430,34 +332,34 @@ class NotificationBuilder {
             }
     }
 
-    private static void setNotificationPendingIntents(NotificationModel notificationModel, PendingIntent pendingActionIntent, PendingIntent pendingDismissIntent, NotificationCompat.Builder builder) {
+    static void setNotificationPendingIntents(NotificationModel notificationModel, PendingIntent pendingActionIntent, PendingIntent pendingDismissIntent, std::wstring& builder) {
         builder.setContentIntent(pendingActionIntent);
         if(!notificationModel.groupSummary)
             builder.setDeleteIntent(pendingDismissIntent);
     }
 
-    private static void setWakeUpScreen(NotificationModel notificationModel) {
+    static void setWakeUpScreen(NotificationModel notificationModel) {
         if (notificationModel.content.wakeUpScreen)
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH)
                 wakeUpScreen();
     }
 
-    private static void setCriticalAlert(NotificationChannelModel channel) throws AwesomeNotificationException {
+    static void setCriticalAlert(NotificationChannelModel channel) throws AwesomeNotificationException {
         if (channel.criticalAlerts)
             ensureCriticalAlert();
     }
 
-    private static void setFullScreenIntent(PendingIntent pendingIntent, NotificationModel notificationModel, NotificationCompat.Builder builder) {
+    static void setFullScreenIntent(PendingIntent pendingIntent, NotificationModel notificationModel, std::wstring& builder) {
         if (BooleanUtils.getValue(notificationModel.content.fullScreenIntent)) {
             builder.setFullScreenIntent(pendingIntent, true);
         }
     }
 
-    private static void setShowWhen(NotificationModel notificationModel, NotificationCompat.Builder builder) {
+    static void setShowWhen(NotificationModel notificationModel, std::wstring& builder) {
         builder.setShowWhen(BooleanUtils.getValueOrDefault(notificationModel.content.showWhen, true));
     }
 
-    private static Integer getBackgroundColor(NotificationModel notificationModel, NotificationChannelModel channel, NotificationCompat.Builder builder) {
+    static Integer getBackgroundColor(NotificationModel notificationModel, NotificationChannelModel channel, std::wstring& builder) {
         Integer bgColorValue;
         bgColorValue = IntegerUtils.extractInteger(notificationModel.content.backgroundColor, null);
         if (bgColorValue != null) {
@@ -468,33 +370,31 @@ class NotificationBuilder {
         return bgColorValue;
     }
 
-    private static Integer getLayoutColor(NotificationModel notificationModel, NotificationChannelModel channel) {
+    static Integer getLayoutColor(NotificationModel notificationModel, NotificationChannelModel channel) {
         Integer layoutColorValue;
         layoutColorValue = IntegerUtils.extractInteger(notificationModel.content.color, channel.defaultColor);
         layoutColorValue = IntegerUtils.extractInteger(layoutColorValue, Color.BLACK);
         return layoutColorValue;
     }
-
-    private static void setImportance(NotificationChannelModel channel, NotificationCompat.Builder builder) {
-        builder.setPriority(NotificationImportance.toAndroidPriority(channel.importance));
-    }
-
-    private static void setCategory(NotificationModel notificationModel, NotificationCompat.Builder builder){
+*/
+    static void SetImportance(const NotificationChannelModel& channel, std::wstring& builder);
+/*
+    static void setCategory(NotificationModel notificationModel, std::wstring& builder){
         if(notificationModel.content.category != null)
             builder.setCategory(notificationModel.content.category.rawValue);
     }
 
-    private static void setOnlyAlertOnce(NotificationModel notificationModel, NotificationChannelModel channel, NotificationCompat.Builder builder) {
+    static void setOnlyAlertOnce(NotificationModel notificationModel, NotificationChannelModel channel, std::wstring& builder) {
         boolean onlyAlertOnceValue = BooleanUtils.getValue(notificationModel.content.notificationLayout == NotificationLayout.ProgressBar || channel.onlyAlertOnce);
         builder.setOnlyAlertOnce(onlyAlertOnceValue);
     }
 
-    private static void setRemoteHistory(NotificationModel notificationModel, NotificationCompat.Builder builder) {
+    static void setRemoteHistory(NotificationModel notificationModel, std::wstring& builder) {
         if(!StringUtils.isNullOrEmpty(notificationModel.remoteHistory) && notificationModel.content.notificationLayout == NotificationLayout.Default)
             builder.setRemoteInputHistory(new CharSequence[]{notificationModel.remoteHistory});
     }
 
-    private static void setLockedNotification(NotificationModel notificationModel, NotificationChannelModel channel, NotificationCompat.Builder builder) {
+    static void setLockedNotification(NotificationModel notificationModel, NotificationChannelModel channel, std::wstring& builder) {
         boolean contentLocked = BooleanUtils.getValue(notificationModel.content.locked);
         boolean channelLocked = BooleanUtils.getValue(channel.locked);
 
@@ -506,7 +406,7 @@ class NotificationBuilder {
         }
     }
 
-    private static void setTicker(NotificationModel notificationModel, NotificationCompat.Builder builder) {
+    static void setTicker(NotificationModel notificationModel, std::wstring& builder) {
         String tickerValue;
         tickerValue = StringUtils.getValueOrDefault(notificationModel.content.ticker, null);
         tickerValue = StringUtils.getValueOrDefault(tickerValue, notificationModel.content.summary);
@@ -514,28 +414,22 @@ class NotificationBuilder {
         builder.setTicker(tickerValue);
     }
 
-    private static void setBadge(NotificationModel notificationModel, NotificationChannelModel channelModel, NotificationCompat.Builder builder) {
+    static void setBadge(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) {
         if (!notificationModel.groupSummary && BooleanUtils.getValue(channelModel.channelShowBadge)) {
             BadgeManager.incrementGlobalBadgeCounter();
             builder.setNumber(1);
         }
     }
 
-    private static void setAutoCancel(NotificationModel notificationModel, NotificationCompat.Builder builder) {
+    static void setAutoCancel(NotificationModel notificationModel, std::wstring& builder) {
         builder.setAutoCancel(BooleanUtils.getValueOrDefault(notificationModel.content.autoDismissible, true));
     }
+*/
+    static void SetBody(const NotificationModel& notificationModel, std::wstring& builder);
 
-    private static void setBody(NotificationModel notificationModel, NotificationCompat.Builder builder) {
-        builder.setContentText(HtmlUtils.fromHtml(notificationModel.content.body));
-    }
-
-    private static void setTitle(NotificationModel notificationModel, NotificationChannelModel channelModel, NotificationCompat.Builder builder) {
-        if (notificationModel.content.title != null) {
-            builder.setContentTitle(HtmlUtils.fromHtml(notificationModel.content.title));
-        }
-    }
-
-    private static void setVibrationPattern(NotificationChannelModel channelModel, NotificationCompat.Builder builder) {
+    static void SetTitle(const NotificationModel& notificationModel, const NotificationChannelModel& channelModel, std::wstring& builder);
+/*
+    static void setVibrationPattern(NotificationChannelModel channelModel, std::wstring& builder) {
         if (BooleanUtils.getValue(channelModel.enableVibration)) {
             if (channelModel.vibrationPattern != null && channelModel.vibrationPattern.length > 0) {
                 builder.setVibrate(channelModel.vibrationPattern);
@@ -545,7 +439,7 @@ class NotificationBuilder {
         }
     }
 
-    private static void setLights(NotificationChannelModel channelModel, NotificationCompat.Builder builder) {
+    static void setLights(NotificationChannelModel channelModel, std::wstring& builder) {
         if (BooleanUtils.getValue(channelModel.enableLights)) {
             Integer ledColorValue = IntegerUtils.extractInteger(channelModel.ledColor, Color.WHITE);
             Integer ledOnMsValue = IntegerUtils.extractInteger(channelModel.ledOnMs, 300);
@@ -554,7 +448,7 @@ class NotificationBuilder {
         }
     }
 
-    private static void setVisibility(NotificationModel notificationModel, NotificationChannelModel channelModel, NotificationCompat.Builder builder) {
+    static void setVisibility(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) {
 
 //        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 //
@@ -566,7 +460,7 @@ class NotificationBuilder {
 //        }
     }
 
-    private static void setLayoutColor(NotificationModel notificationModel, NotificationChannelModel channelModel, NotificationCompat.Builder builder) {
+    static void setLayoutColor(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) {
 
         if (notificationModel.content.backgroundColor == null) {
             builder.setColor(getLayoutColor(notificationModel, channelModel));
@@ -575,7 +469,7 @@ class NotificationBuilder {
         }
     }
 
-    private static void setLargeIcon(NotificationModel notificationModel, NotificationCompat.Builder builder) {
+    static void setLargeIcon(NotificationModel notificationModel, std::wstring& builder) {
         if (notificationModel.content.notificationLayout != NotificationLayout.BigPicture)
             if (!StringUtils.isNullOrEmpty(notificationModel.content.largeIcon)) {
                 Bitmap largeIcon = BitmapUtils.getBitmapFromSource(
@@ -586,7 +480,7 @@ class NotificationBuilder {
             }
     }
 
-    private static void setSound(NotificationModel notificationModel, NotificationChannelModel channelModel, NotificationCompat.Builder builder) {
+    static void setSound(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) {
 
         Uri uri = null;
 
@@ -598,7 +492,7 @@ class NotificationBuilder {
         builder.setSound(uri);
     }
 
-    private static void setSmallIcon(NotificationModel notificationModel, NotificationChannelModel channelModel, NotificationCompat.Builder builder) {
+    static void setSmallIcon(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) {
         if (!StringUtils.isNullOrEmpty(notificationModel.content.icon)) {
             builder.setSmallIcon(BitmapUtils.getDrawableResourceId(notificationModel.content.icon));
         } else if (!StringUtils.isNullOrEmpty(channelModel.icon)) {
@@ -631,7 +525,7 @@ class NotificationBuilder {
         }
     }
 
-    private static void setGrouping(NotificationModel notificationModel, NotificationChannelModel channelModel, NotificationCompat.Builder builder) {
+    static void setGrouping(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) {
 
         if( // Grouping key is reserved to arrange messaging and messaging group layouts
             notificationModel.content.notificationLayout == NotificationLayout.Messaging ||
@@ -657,7 +551,7 @@ class NotificationBuilder {
         }
     }
 
-    private static void setLayout(NotificationModel notificationModel, NotificationChannelModel channelModel, NotificationCompat.Builder builder) throws AwesomeNotificationException {
+    static void setLayout(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) throws AwesomeNotificationException {
 
         switch (notificationModel.content.notificationLayout) {
 
@@ -699,7 +593,7 @@ class NotificationBuilder {
         }
     }
 
-    private static Boolean setBigPictureLayout(NotificationContentModel contentModel, NotificationCompat.Builder builder) {
+    static Boolean setBigPictureLayout(NotificationContentModel contentModel, std::wstring& builder) {
 
         Bitmap bigPicture = null, largeIcon = null;
 
@@ -756,7 +650,7 @@ class NotificationBuilder {
         return true;
     }
 
-    private static Boolean setBigTextStyle(NotificationContentModel contentModel, NotificationCompat.Builder builder) {
+    static Boolean setBigTextStyle(NotificationContentModel contentModel, std::wstring& builder) {
 
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
 
@@ -780,7 +674,7 @@ class NotificationBuilder {
         return true;
     }
 
-    private static Boolean setInboxLayout(NotificationContentModel contentModel, NotificationCompat.Builder builder) {
+    static Boolean setInboxLayout(NotificationContentModel contentModel, std::wstring& builder) {
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
@@ -819,7 +713,7 @@ class NotificationBuilder {
     static std::optional<std::string> GetGroupKey(std::shared_ptr<NotificationContentModel> contentModel, const NotificationChannelModel& channelModel);
 /*
     @SuppressWarnings("unchecked")
-    private static Boolean setMessagingLayout(boolean isGrouping, NotificationContentModel contentModel, NotificationChannelModel channelModel, NotificationCompat.Builder builder) throws AwesomeNotificationException {
+    static Boolean setMessagingLayout(boolean isGrouping, NotificationContentModel contentModel, NotificationChannelModel channelModel, std::wstring& builder) throws AwesomeNotificationException {
         String groupKey = getGroupKey(contentModel, channelModel);
 
             String messageQueueKey = groupKey + (isGrouping ? ".Gr" : "");
@@ -884,7 +778,7 @@ class NotificationBuilder {
         return true;
     }
 
-    private static Boolean setMediaPlayerLayout(NotificationContentModel contentModel, List<NotificationButtonModel> actionButtons, NotificationCompat.Builder builder) {
+    static Boolean setMediaPlayerLayout(NotificationContentModel contentModel, List<NotificationButtonModel> actionButtons, std::wstring& builder) {
 
         ArrayList<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < actionButtons.size(); i++) {
@@ -935,7 +829,7 @@ class NotificationBuilder {
         return true;
     }
 
-    private static void setProgressLayout(NotificationModel notificationModel, NotificationCompat.Builder builder) {
+    static void setProgressLayout(NotificationModel notificationModel, std::wstring& builder) {
         builder.setProgress(
                 100,
                 Math.max(0, Math.min(100, IntegerUtils.extractInteger(notificationModel.content.progress, 0))),
@@ -943,7 +837,7 @@ class NotificationBuilder {
         );
     }
 
-    private static void setPhoneCallLayout(NotificationModel notificationModel, NotificationCompat.Builder builder) {
+    static void setPhoneCallLayout(NotificationModel notificationModel, std::wstring& builder) {
         // RemoteViews notificationLayout = new RemoteViews(context.getPackageName(), android.R.layout.incoming_call);
         // //RemoteViews notificationLayoutExpanded = new RemoteViews(context.getPackageName(), R.layout.incoming_call_large);
     
@@ -953,7 +847,7 @@ class NotificationBuilder {
         //     //.setCustomBigContentView(notificationLayoutExpanded);
     }
 
-    private static int[] toIntArray(ArrayList<Integer> list) {
+    static int[] toIntArray(ArrayList<Integer> list) {
         if (list == null || list.size() <= 0) return new int[0];
 
         int[] result = new int[list.size()];
