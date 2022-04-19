@@ -17,18 +17,10 @@
 #include <memory>
 #include <sstream>
 
-#include <wil/win32_helpers.h>
-#include <wil/filesystem.h>
-#include <wil/stl.h>
 #include <winrt/base.h>
 #include <winrt/Windows.Foundation.h>
 #include <MddBootstrap.h>
 #include <winrt/Microsoft.Windows.AppNotifications.h>
-#include <appmodel.h>
-
-#include <propkey.h> //PKEY properties
-#include <propsys.h>
-#include <ShObjIdl_core.h>
 
 #include "notifications/models/NotificationModel.h"
 #include "notifications/models/NotificationChannelGroupModel.h"
@@ -148,8 +140,6 @@ class AwesomeNotificationsPlugin : public flutter::Plugin {
     void SetChannelGroups(flutter::EncodableList channelGroupsData);
     void SetChannels(flutter::EncodableList channelsData);
     void SetDefaults(std::string defaultIcon);
-
-    void SetDisplayNameAndIcon(std::string defaultIcon) noexcept;
 
     // The registrar for this plugin, for accessing the window.
     flutter::PluginRegistrarWindows *registrar_;
@@ -293,45 +283,6 @@ HWND GetRootWindow(flutter::FlutterView *view) {
     return ::GetAncestor(view->GetNativeWindow(), GA_ROOT);
 }
 
-void AwesomeNotificationsPlugin::SetDisplayNameAndIcon(std::string defaultIcon) noexcept
-{
-    // Not mandatory, but it's highly recommended to specify AppUserModelId
-    //SetCurrentProcessExplicitAppUserModelID(L"TestAppId");
-
-    // Icon is mandatory
-    winrt::com_ptr<IPropertyStore> propertyStore;
-    // wil::unique_hwnd hWindow{ GetRootWindow(registrar_->GetView()) };
-    wil::unique_hwnd hWindow{ GetConsoleWindow() };
-
-    SHGetPropertyStoreForWindow(hWindow.get(), IID_PPV_ARGS(&propertyStore));
-
-    defaultIcon = "/data/flutter_assets/" + defaultIcon;
-
-    auto modulePath = wil::GetModuleFileNameW<std::wstring>(nullptr);
-
-    size_t found = modulePath.find_last_of(L"/\\");
-    modulePath = modulePath.substr(0, found);
-
-    auto wDefaultIcon = modulePath + std::wstring(defaultIcon.begin(), defaultIcon.end());
-    wDefaultIcon = ReplaceAll(wDefaultIcon, std::wstring(L"/"), std::wstring(L"\\"));
-
-    wil::unique_prop_variant propVariantIcon;
-    wil::unique_cotaskmem_string sth = wil::make_unique_string<wil::unique_cotaskmem_string>(wDefaultIcon.c_str());
-    propVariantIcon.pwszVal = sth.release();
-    propVariantIcon.vt = VT_LPWSTR;
-    propertyStore->SetValue(PKEY_AppUserModel_RelaunchIconResource, propVariantIcon);
-
-    // App name is not mandatory, but it's highly recommended to specify it
-    wil::unique_prop_variant propVariantAppName;
-    WCHAR title[1024];
-    //GetWindowTextW(hWindow.get(), title, 1023);
-    GetWindowTextW(GetRootWindow(registrar_->GetView()), title, 1023); // TODO
-    wil::unique_cotaskmem_string prodName = wil::make_unique_string<wil::unique_cotaskmem_string>(title);
-    propVariantAppName.pwszVal = prodName.release();
-    propVariantAppName.vt = VT_LPWSTR;
-    propertyStore->SetValue(PKEY_AppUserModel_RelaunchDisplayNameResource, propVariantAppName);
-}
-
 void AwesomeNotificationsPlugin::channelMethodInitialize(const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
     
@@ -370,12 +321,12 @@ void AwesomeNotificationsPlugin::channelMethodInitialize(const flutter::MethodCa
             return;
         }
 
-        SetDisplayNameAndIcon(defaultIconPath);
+        // SetDisplayNameAndIcon(defaultIconPath);
     }
 
     std::wcout << L"Running as " << (isPackaged ? L"packaged.\n\n" : L"unpackaged.\n\n");
 
-    winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().Register();
+    winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default().Register(); // TODO: defaultIconPath
 
     if (AwesomeNotificationsPlugin::debug) {
         std::wcout << "Awesome Notifications service initialized" << std::endl;
