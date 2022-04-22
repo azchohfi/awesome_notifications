@@ -17,9 +17,9 @@ class NotificationScheduleModel : public AbstractModel {
     bool allowWhileIdle;
     bool preciseAlarm;
 
-    virtual void FromMap(const flutter::EncodableMap& arguments);
+    void FromMap(const flutter::EncodableMap& arguments) override;
 
-    virtual flutter::EncodableValue ToMap() const;
+    flutter::EncodableValue ToMap() const override;
 
     virtual std::chrono::milliseconds GetNextValidDate(std::chrono::milliseconds fixedNowDate) = 0;
 

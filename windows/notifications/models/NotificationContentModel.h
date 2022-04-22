@@ -67,19 +67,19 @@ public:
 
     NotificationContentModel();
 
-    virtual void FromMap(const flutter::EncodableMap& arguments);
+    void FromMap(const flutter::EncodableMap& arguments) override;
 
-    virtual flutter::EncodableValue ToMap() const;
+    flutter::EncodableValue ToMap() const override;
 
     static flutter::EncodableList MessagesToMap(std::vector<NotificationMessageModel> messages);
 
     static std::vector<NotificationMessageModel> MapToMessages(flutter::EncodableList messagesData);
 
-    virtual std::string ToJson() const;
+    std::string ToJson() const override;
 
-    virtual void FromJson(const std::string& json);
+    void FromJson(const std::string& json) override;
 
-    virtual void Validate() const;
+    void Validate() const override;
 
  private:
 

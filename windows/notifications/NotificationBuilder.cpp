@@ -3,6 +3,8 @@
 #include "../utils/IntegerUtils.h"
 #include "../utils/HtmlUtils.h"
 #include "../utils/StringUtils.h"
+#include "../utils/BitmapUtils.h"
+#include "managers/DefaultsManager.h"
 
 winrt::Microsoft::Windows::AppNotifications::AppNotification NotificationBuilder::CreateNotification(const NotificationModel& notificationModel) {
 
@@ -48,17 +50,14 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification NotificationBuilder
     NotificationChannel androidChannel = ChannelManager::GetAndroidChannel(channel.channelKey);
     builder.setChannelId(androidChannel.getId());
 
-    setSmallIcon(notificationModel, channel, builder);
-
     setRemoteHistory(notificationModel, builder);
 
     setGrouping(notificationModel, channel, builder);
 
     setVisibility(notificationModel, channel, builder);
     setShowWhen(notificationModel, builder);
-
-    setLayout(notificationModel, channel, builder);
 */
+    SetLayout(notificationModel, channel, builder);
     SetTitle(notificationModel, channel, builder);
     SetBody(notificationModel, builder);
     /*
@@ -76,9 +75,10 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification NotificationBuilder
     setSound(notificationModel, channel, builder);
     setVibrationPattern(channel, builder);
     setLights(channel, builder);
-
-    setSmallIcon(notificationModel, channel, builder);
-    setLargeIcon(notificationModel, builder);
+*/
+    SetSmallIcon(notificationModel, channel, builder);
+    SetLargeIcon(notificationModel, builder);
+    /*
     setLayoutColor(notificationModel, channel, builder);
     */
     CreateActionButtons(notificationModel, channel, actions);
@@ -248,4 +248,152 @@ void NotificationBuilder::CreateActionButtons(const NotificationModel& notificat
     }
 
     actions += L"</actions>";
+}
+
+void NotificationBuilder::SetSmallIcon(const NotificationModel& notificationModel, const NotificationChannelModel& channelModel, std::wstring& builder) {
+    if (!notificationModel.content->icon.empty()) {
+        //builder.setSmallIcon(BitmapUtils.getDrawableResourceId(notificationModel.content.icon));
+    } else if (!channelModel.icon.empty()) {
+        //builder.setSmallIcon(BitmapUtils.getDrawableResourceId(channelModel.icon));
+    } else {
+        std::string defaultIcon = DefaultsManager::GetDefaultIconByKey();
+
+        /*
+        if (defaultIcon.empty()) {
+
+            int defaultResource = context.getResources().getIdentifier(
+                    "ic_launcher",
+                    "mipmap",
+                    context.getPackageName()
+            );
+
+            if (defaultResource > 0) {
+                builder.setSmallIcon(defaultResource);
+            }
+        } else {
+            int resourceIndex = BitmapUtils.getDrawableResourceId(defaultIcon);
+            if (resourceIndex > 0) {
+                builder.setSmallIcon(resourceIndex);
+            }
+        }
+        */
+    }
+}
+
+void NotificationBuilder::SetLargeIcon(const NotificationModel& notificationModel, std::wstring& builder) {
+    if (notificationModel.content->notificationLayout != NotificationLayout::BigPicture) {
+        if (!notificationModel.content->largeIcon.empty()) {
+            auto largeIcon = BitmapUtils::GetBitmapFromSource(
+                    notificationModel.content->largeIcon,
+                    notificationModel.content->roundedLargeIcon);
+            if (!largeIcon.empty()) {
+                builder += LR"(<image placement="appLogoOverride" hint-crop="circle" src=")" + largeIcon + LR"("/>)";
+            }
+        }
+    }
+}
+
+void NotificationBuilder::SetLayout(const NotificationModel& notificationModel, const NotificationChannelModel& channelModel, std::wstring& builder) {
+    if (!notificationModel.content->notificationLayout.has_value()) {
+        return;
+    }
+
+    switch (notificationModel.content->notificationLayout.value()) {
+
+        case NotificationLayout::BigPicture:
+            if (SetBigPictureLayout(notificationModel.content, builder)) return;
+            break;
+
+        case NotificationLayout::BigText:
+            //if (setBigTextStyle(notificationModel.content, builder)) return;
+            break;
+
+        case NotificationLayout::Inbox:
+            //if (setInboxLayout(notificationModel.content, builder)) return;
+            break;
+
+        case NotificationLayout::Messaging:
+            //if (setMessagingLayout(false, notificationModel.content, channelModel, builder)) return;
+            break;
+
+        case NotificationLayout::MessagingGroup:
+            //if(setMessagingLayout(true, notificationModel.content, channelModel, builder)) return;
+            break;
+
+        case NotificationLayout::PhoneCall:
+            //setPhoneCallLayout(notificationModel, builder);
+            break;
+
+        case NotificationLayout::MediaPlayer:
+            //if (setMediaPlayerLayout(notificationModel.content, notificationModel.actionButtons, builder)) return;
+            break;
+
+        case NotificationLayout::ProgressBar:
+            //setProgressLayout(notificationModel, builder);
+            break;
+
+        case NotificationLayout::Default:
+            break;
+
+        default:
+            break;
+    }
+}
+
+bool NotificationBuilder::SetBigPictureLayout(std::shared_ptr<NotificationContentModel> contentModel, std::wstring& builder) {
+
+    std::wstring bigPicture, largeIcon;
+
+    if (!contentModel->bigPicture.empty())
+        bigPicture = BitmapUtils::GetBitmapFromSource(
+                contentModel->bigPicture,
+                contentModel->roundedBigPicture);
+
+    if (contentModel->hideLargeIconOnExpand)
+        largeIcon = !bigPicture.empty() ?
+            bigPicture : (!contentModel->largeIcon.empty() ?
+                BitmapUtils::GetBitmapFromSource(
+                        contentModel->largeIcon,
+                        contentModel->roundedLargeIcon
+                ) : L"");
+    else {
+        bool areEqual =
+                !contentModel->largeIcon.empty() &&
+                contentModel->largeIcon == contentModel->bigPicture &&
+                contentModel->roundedLargeIcon == contentModel->roundedBigPicture;
+
+        if(areEqual)
+            largeIcon = bigPicture;
+        else if(!contentModel->largeIcon.empty())
+            largeIcon =
+                    BitmapUtils::GetBitmapFromSource(
+                            contentModel->largeIcon,
+                            contentModel->roundedLargeIcon);
+    }
+
+    if (!largeIcon.empty()) {
+        // builder.setLargeIcon(largeIcon);
+    }
+
+    if (bigPicture.empty())
+        return false;
+
+    //NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
+
+    //bigPictureStyle.bigPicture(bigPicture);
+    //bigPictureStyle.bigLargeIcon(contentModel->hideLargeIconOnExpand ? "" : largeIcon);
+
+    if (!contentModel->title.empty()) {
+        auto contentTitle = HtmlUtils::FromHtml(contentModel->title);
+        //bigPictureStyle.setBigContentTitle(contentTitle);
+    }
+
+    if (!contentModel->body.empty()) {
+        auto summaryText = HtmlUtils::FromHtml(contentModel->body);
+        //bigPictureStyle.setSummaryText(summaryText);
+    }
+
+    //builder.setStyle(bigPictureStyle);
+
+    return true;
 }

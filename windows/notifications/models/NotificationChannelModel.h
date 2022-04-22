@@ -63,15 +63,15 @@ class NotificationChannelModel : public AbstractModel {
 
     //bool equals(@Nullable Object obj);
 
-    void FromMap(const flutter::EncodableMap& arguments);
+    void FromMap(const flutter::EncodableMap& arguments) override;
 
-    flutter::EncodableValue ToMap() const;
+    flutter::EncodableValue ToMap() const override;
 
-    std::string ToJson() const;
+    std::string ToJson() const override;
 
-    void FromJson(const std::string& json);
+    void FromJson(const std::string& json) override;
 
-    void Validate() const;
+    void Validate() const override;
 
-    NotificationChannelModel Clone();
+    virtual NotificationChannelModel Clone();
 };

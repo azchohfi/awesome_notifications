@@ -26,6 +26,7 @@
 #include "notifications/models/NotificationChannelGroupModel.h"
 #include "notifications/models/NotificationChannelModel.h"
 #include "notifications/NotificationSender.h"
+#include "notifications/managers/DefaultsManager.h"
 
 namespace {
 
@@ -355,10 +356,9 @@ void AwesomeNotificationsPlugin::SetDefaults(std::string defaultIcon) {
     if (MediaUtils.getMediaSourceType(defaultIcon) != MediaSource.Resource) {
         defaultIcon = null;
     }
-
-    DefaultsManager.saveDefault(context, new DefaultsModel(defaultIcon));
-    DefaultsManager.commitChanges(context);
-    */
+*/
+    DefaultsManager::SaveDefault(DefaultsModel(defaultIcon));
+    DefaultsManager::CommitChanges();
 }
 
 void AwesomeNotificationsPlugin::SetChannelGroups(flutter::EncodableList channelGroupsData) {

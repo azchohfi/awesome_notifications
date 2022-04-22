@@ -13,13 +13,13 @@
 
 class NotificationModel : public AbstractModel {
  public:
-  virtual void FromMap(const flutter::EncodableMap& arguments);
-  virtual void FromJson(const std::string& json);
-  virtual flutter::EncodableValue ToMap() const;
+  void FromMap(const flutter::EncodableMap& arguments) override;
+  void FromJson(const std::string& json) override;
+  flutter::EncodableValue ToMap() const override;
 
-  virtual std::string ToJson() const;
+  std::string ToJson() const override;
 
-  virtual void Validate() const;
+  void Validate() const override;
 
   bool groupSummary = false;
   std::string remoteHistory;

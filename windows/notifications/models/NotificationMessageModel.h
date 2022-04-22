@@ -18,13 +18,13 @@ class NotificationMessageModel : public AbstractModel {
 
     NotificationMessageModel();
     NotificationMessageModel(std::string title, std::string message, std::string largeIcon);
-    virtual void FromMap(const flutter::EncodableMap& arguments);
-    virtual void FromJson(const std::string& json);
+    void FromMap(const flutter::EncodableMap& arguments) override;
+    void FromJson(const std::string& json) override;
 
-    virtual flutter::EncodableValue ToMap() const;
+    flutter::EncodableValue ToMap() const override;
 
-    virtual std::string ToJson() const;
+    std::string ToJson() const override;
 
-    virtual void Validate() const;
+    void Validate() const override;
 
 };

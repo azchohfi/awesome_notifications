@@ -1,17 +1,18 @@
 #pragma once
 
-#include <flutter/encodable_value.h>
-
-#include "AbstractModel.h"
-
 #include <string>
 
-class NotificationChannelGroupModel : public AbstractModel {
- public:
-    std::string channelGroupName;
-    std::string channelGroupKey;
+#include "../../definitions.h"
+#include "AbstractModel.h"
 
-    NotificationChannelGroupModel(){}
+class DefaultsModel : public AbstractModel {
+ public:
+    std::string appIcon;
+    bool firebaseEnabled;
+
+    DefaultsModel();
+
+    DefaultsModel(const std::string& defaultAppIcon);
 
     void FromMap(const flutter::EncodableMap& arguments) override;
 

@@ -21,13 +21,13 @@ class NotificationButtonModel : public AbstractModel {
 
     NotificationButtonModel();
 
-    void FromMap(const flutter::EncodableMap& arguments);
+    void FromMap(const flutter::EncodableMap& arguments) override;
 
-    flutter::EncodableValue ToMap() const;
+    flutter::EncodableValue ToMap() const override;
 
-    std::string ToJson() const;
+    std::string ToJson() const override;
 
-    void FromJson(const std::string& json);
+    void FromJson(const std::string& json) override;
 
-    virtual void Validate() const;
+    void Validate() const override;
 };

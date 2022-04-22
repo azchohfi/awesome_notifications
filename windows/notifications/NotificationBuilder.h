@@ -468,18 +468,11 @@ class NotificationBuilder {
             builder.setColor(getBackgroundColor(notificationModel, channelModel, builder));
         }
     }
+    */
 
-    static void setLargeIcon(NotificationModel notificationModel, std::wstring& builder) {
-        if (notificationModel.content.notificationLayout != NotificationLayout.BigPicture)
-            if (!StringUtils.isNullOrEmpty(notificationModel.content.largeIcon)) {
-                Bitmap largeIcon = BitmapUtils.getBitmapFromSource(
-                        notificationModel.content.largeIcon,
-                        notificationModel.content.roundedLargeIcon);
-                if (largeIcon != null)
-                    builder.setLargeIcon(largeIcon);
-            }
-    }
+    static void SetLargeIcon(const NotificationModel& notificationModel, std::wstring& builder);
 
+    /*
     static void setSound(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) {
 
         Uri uri = null;
@@ -491,40 +484,11 @@ class NotificationBuilder {
 
         builder.setSound(uri);
     }
+    */
 
-    static void setSmallIcon(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) {
-        if (!StringUtils.isNullOrEmpty(notificationModel.content.icon)) {
-            builder.setSmallIcon(BitmapUtils.getDrawableResourceId(notificationModel.content.icon));
-        } else if (!StringUtils.isNullOrEmpty(channelModel.icon)) {
-            builder.setSmallIcon(BitmapUtils.getDrawableResourceId(channelModel.icon));
-        } else {
-            String defaultIcon = DefaultsManager.getDefaultIconByKey();
+    static void SetSmallIcon(const NotificationModel& notificationModel, const NotificationChannelModel& channelModel, std::wstring& builder);
 
-            if (StringUtils.isNullOrEmpty(defaultIcon)) {
-
-                // for backwards compatibility: this is for handling the old way references to the icon used to be kept but should be removed in future
-                if (channelModel.iconResourceId != null) {
-                    builder.setSmallIcon(channelModel.iconResourceId);
-                } else {
-                    int defaultResource = context.getResources().getIdentifier(
-                            "ic_launcher",
-                            "mipmap",
-                            context.getPackageName()
-                    );
-
-                    if (defaultResource > 0) {
-                        builder.setSmallIcon(defaultResource);
-                    }
-                }
-            } else {
-                int resourceIndex = BitmapUtils.getDrawableResourceId(defaultIcon);
-                if (resourceIndex > 0) {
-                    builder.setSmallIcon(resourceIndex);
-                }
-            }
-        }
-    }
-
+/*
     static void setGrouping(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) {
 
         if( // Grouping key is reserved to arrange messaging and messaging group layouts
@@ -550,106 +514,11 @@ class NotificationBuilder {
             builder.setGroupAlertBehavior(channelModel.groupAlertBehavior.ordinal());
         }
     }
+*/
+    static void SetLayout(const NotificationModel& notificationModel, const NotificationChannelModel& channelModel, std::wstring& builder);
 
-    static void setLayout(NotificationModel notificationModel, NotificationChannelModel channelModel, std::wstring& builder) throws AwesomeNotificationException {
-
-        switch (notificationModel.content.notificationLayout) {
-
-            case BigPicture:
-                if (setBigPictureLayout(notificationModel.content, builder)) return;
-                break;
-
-            case BigText:
-                if (setBigTextStyle(notificationModel.content, builder)) return;
-                break;
-
-            case Inbox:
-                if (setInboxLayout(notificationModel.content, builder)) return;
-                break;
-
-            case Messaging:
-                if (setMessagingLayout(false, notificationModel.content, channelModel, builder)) return;
-                break;
-
-            case MessagingGroup:
-                if(setMessagingLayout(true, notificationModel.content, channelModel, builder)) return;
-                break;
-
-            case PhoneCall:
-                setPhoneCallLayout(notificationModel, builder);
-                break;
-
-            case MediaPlayer:
-                if (setMediaPlayerLayout(notificationModel.content, notificationModel.actionButtons, builder)) return;
-                break;
-
-            case ProgressBar:
-                setProgressLayout(notificationModel, builder);
-                break;
-
-            case Default:
-            default:
-                break;
-        }
-    }
-
-    static Boolean setBigPictureLayout(NotificationContentModel contentModel, std::wstring& builder) {
-
-        Bitmap bigPicture = null, largeIcon = null;
-
-        if (!StringUtils.isNullOrEmpty(contentModel.bigPicture))
-            bigPicture = BitmapUtils.getBitmapFromSource(
-                    contentModel.bigPicture,
-                    contentModel.roundedBigPicture);
-
-        if (contentModel.hideLargeIconOnExpand)
-            largeIcon = bigPicture != null ?
-                bigPicture : (!StringUtils.isNullOrEmpty(contentModel.largeIcon) ?
-                    BitmapUtils.getBitmapFromSource(
-                            contentModel.largeIcon,
-                            contentModel.roundedLargeIcon
-                    ) : null);
-        else {
-            boolean areEqual =
-                    !StringUtils.isNullOrEmpty(contentModel.largeIcon) &&
-                    contentModel.largeIcon.equals(contentModel.bigPicture) &&
-                    contentModel.roundedLargeIcon == contentModel.roundedBigPicture;
-
-            if(areEqual)
-                largeIcon = bigPicture;
-            else if(!StringUtils.isNullOrEmpty(contentModel.largeIcon))
-                largeIcon =
-                        BitmapUtils.getBitmapFromSource(
-                                contentModel.largeIcon,
-                                contentModel.roundedLargeIcon);
-        }
-
-        if (largeIcon != null)
-            builder.setLargeIcon(largeIcon);
-
-        if (bigPicture == null)
-            return false;
-
-        NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
-
-        bigPictureStyle.bigPicture(bigPicture);
-        bigPictureStyle.bigLargeIcon(contentModel.hideLargeIconOnExpand ? null : largeIcon);
-
-        if (!StringUtils.isNullOrEmpty(contentModel.title)) {
-            CharSequence contentTitle = HtmlUtils.fromHtml(contentModel.title);
-            bigPictureStyle.setBigContentTitle(contentTitle);
-        }
-
-        if (!StringUtils.isNullOrEmpty(contentModel.body)) {
-            CharSequence summaryText = HtmlUtils.fromHtml(contentModel.body);
-            bigPictureStyle.setSummaryText(summaryText);
-        }
-
-        builder.setStyle(bigPictureStyle);
-
-        return true;
-    }
-
+    static bool SetBigPictureLayout(std::shared_ptr<NotificationContentModel> contentModel, std::wstring& builder);
+/*
     static Boolean setBigTextStyle(NotificationContentModel contentModel, std::wstring& builder) {
 
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
