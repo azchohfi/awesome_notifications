@@ -9,3 +9,5 @@ enum class DefaultRingtoneType {
 };
 
 std::string DefaultRingtoneTypeToString(DefaultRingtoneType defaultRingtoneType);
+
+constexpr std::initializer_list<DefaultRingtoneType> All_DefaultRingtoneType = { DefaultRingtoneType::Ringtone, DefaultRingtoneType::Notification, DefaultRingtoneType::Alarm };

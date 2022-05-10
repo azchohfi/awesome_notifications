@@ -1,5 +1,7 @@
 #include "HtmlUtils.h"
 
+#include <windows.h>
+
 std::wstring HtmlUtils::FromHtml(const std::wstring& html) {
     if (html.empty()) {
         return html;
@@ -23,7 +25,11 @@ std::wstring HtmlUtils::FromHtml(const std::wstring& html) {
 }
 
 std::wstring HtmlUtils::FromHtml(const std::string& html) {
-    return FromHtml(std::wstring(html.begin(), html.end()));
+    int count = MultiByteToWideChar(CP_UTF8, 0, html.c_str(), (int)html.length(), NULL, 0);
+    std::wstring wstr(count, 0);
+    MultiByteToWideChar(CP_UTF8, 0, html.c_str(), (int)html.length(), &wstr[0], count);
+
+    return FromHtml(wstr);
 }
 
 std::wstring HtmlUtils::AdaptFlutterColorsToCPP(std::wstring htmlText) {

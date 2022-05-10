@@ -63,8 +63,8 @@ void ActionReceived::FromMap(const flutter::EncodableMap& arguments) {
     actionDate    = MapUtils::ExtractValue<std::string>(arguments, Definitions::NOTIFICATION_ACTION_DATE);
     dismissedDate = MapUtils::ExtractValue<std::string>(arguments, Definitions::NOTIFICATION_DISMISSED_DATE);
 
-    actionLifeCycle = GetEnumValueOrDefault<NotificationLifeCycle>(arguments, Definitions::NOTIFICATION_ACTION_LIFECYCLE);
-    dismissedLifeCycle = GetEnumValueOrDefault<NotificationLifeCycle>(arguments, Definitions::NOTIFICATION_DISMISSED_LIFECYCLE);
+    actionLifeCycle = GetEnumValueOrDefault<NotificationLifeCycle>(arguments, Definitions::NOTIFICATION_ACTION_LIFECYCLE, All_NotificationLifeCycle, NotificationLifeCycleToString);
+    dismissedLifeCycle = GetEnumValueOrDefault<NotificationLifeCycle>(arguments, Definitions::NOTIFICATION_DISMISSED_LIFECYCLE, All_NotificationLifeCycle, NotificationLifeCycleToString);
 }
 
 std::string ActionReceived::ToJson() const {

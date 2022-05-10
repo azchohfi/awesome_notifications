@@ -12,7 +12,7 @@ void NotificationButtonModel::FromMap(const flutter::EncodableMap& arguments) {
     label      = GetValueOrDefault<std::string>(arguments, Definitions::NOTIFICATION_BUTTON_LABEL, "");
     color      = GetValueOrDefault<int>(arguments, Definitions::NOTIFICATION_COLOR, 0);
 
-    buttonType = GetEnumValueOrDefault<ActionButtonType>(arguments, Definitions::NOTIFICATION_BUTTON_TYPE);
+    buttonType = GetEnumValueOrDefault<ActionButtonType>(arguments, Definitions::NOTIFICATION_BUTTON_TYPE, All_ActionButtonType, ActionButtonTypeToString);
 
     enabled    = GetValueOrDefault<bool>(arguments, Definitions::NOTIFICATION_ENABLED, false);
     isDangerousOption = GetValueOrDefault<bool>(arguments, Definitions::NOTIFICATION_IS_DANGEROUS_OPTION, false);

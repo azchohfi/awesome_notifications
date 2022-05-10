@@ -2,32 +2,32 @@
 
 #include "DefaultsManager.h"
 
+SharedManager<DefaultsModel> DefaultsManager::shared = SharedManager<DefaultsModel>(
+                     "DefaultsManager",
+                     "DefaultsModel");
+
 bool DefaultsManager::RemoveDefault() {
-    //return shared.Remove(Definitions::SHARED_DEFAULTS, "Defaults");
-    return false;
+    return shared.Remove(Definitions::SHARED_DEFAULTS, "Defaults");
 }
 
 void DefaultsManager::SaveDefault(const DefaultsModel& defaults) {
-    //shared.Set(Definitions::SHARED_DEFAULTS, "Defaults", defaults);
+    shared.Set(Definitions::SHARED_DEFAULTS, "Defaults", defaults);
 }
 
-DefaultsModel DefaultsManager::GetDefaultByKey() {
-    //return shared.Get(Definitions::SHARED_DEFAULTS, "Defaults");
-    return DefaultsModel();
+std::optional<DefaultsModel> DefaultsManager::GetDefaultByKey() {
+    return shared.Get(Definitions::SHARED_DEFAULTS, "Defaults");
 }
 
 std::string DefaultsManager::GetDefaultIconByKey() {
-    // DefaultsModel defaults = shared.Get(Definitions::SHARED_DEFAULTS, "Defaults");
-    // return (defaults != nullptr) ? defaults.appIcon : nullptr;
-    return "";
+    auto defaults = shared.Get(Definitions::SHARED_DEFAULTS, "Defaults");
+    return defaults.has_value() ? defaults->appIcon : "";
 }
 
 bool DefaultsManager::IsFirebaseEnabled() {
-    // DefaultsModel defaults = shared.Get(Definitions::SHARED_DEFAULTS, "Defaults");
-    // return (defaults != nullptr) ? defaults.firebaseEnabled : true;
-    return false;
+    auto defaults = shared.Get(Definitions::SHARED_DEFAULTS, "Defaults");
+    return defaults.has_value() ? defaults->firebaseEnabled : true;
 }
 
 void DefaultsManager::CommitChanges() {
-    //shared.Commit();
+    shared.Commit();
 }

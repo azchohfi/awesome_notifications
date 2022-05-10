@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 set(PROJECT_NAME "awesome_notifications")
 set(CPPWINRT_VERSION "2.0.220325.3")
 set(WIL_VERSION "1.0.220201.1")
-set(WAS_VERSION "1.1.0-preview2")
+set(WAS_VERSION "1.1.0-preview3")
 project(${PROJECT_NAME} LANGUAGES CXX)
 include(FetchContent)
 
@@ -109,6 +109,7 @@ add_library(${PLUGIN_NAME} SHARED
   "notifications/exceptions/AwesomeNotificationException.h"
   "notifications/managers/DefaultsManager.h"
   "notifications/managers/DefaultsManager.cpp"
+  "notifications/managers/SharedManager.h"
   "notifications/NotificationSender.h"
   "notifications/NotificationSender.cpp"
   "notifications/NotificationBuilder.h"

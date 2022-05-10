@@ -224,6 +224,9 @@ void NotificationBuilder::CreateActionButtons(const NotificationModel& notificat
             */
 
             actions += LR"(<input id=")" + StringUtils::ToWString(buttonProperties.key) + LR"(" type="text" placeHolderContent=")" + HtmlUtils::FromHtml(buttonProperties.label) + LR"("/>)";
+            std::string arguments = Definitions::NOTIFICATION_BUTTON_ACTION_PREFIX + "_" + buttonProperties.key;
+            actions += LR"(<action content=")" + HtmlUtils::FromHtml(buttonProperties.label) + LR"(" 
+                arguments=")" + StringUtils::ToWString(arguments) + LR"(" hint-inputId=")" + StringUtils::ToWString(buttonProperties.key) + LR"(" />)";
         } else {
             std::string arguments = Definitions::NOTIFICATION_BUTTON_ACTION_PREFIX + "_" + buttonProperties.key;
             actions += LR"(<action content=")" + HtmlUtils::FromHtml(buttonProperties.label) + LR"(" 
@@ -287,7 +290,8 @@ void NotificationBuilder::SetLargeIcon(const NotificationModel& notificationMode
                     notificationModel.content->largeIcon,
                     notificationModel.content->roundedLargeIcon);
             if (!largeIcon.empty()) {
-                builder += LR"(<image placement="appLogoOverride" hint-crop="circle" src=")" + largeIcon + LR"("/>)";
+                auto crop = std::wstring(notificationModel.content->roundedLargeIcon ? L"circle" : L"default");
+                builder += LR"(<image placement="appLogoOverride" hint-crop=")" + crop + LR"(" src=")" + largeIcon + LR"("/>)";
             }
         }
     }
@@ -372,28 +376,23 @@ bool NotificationBuilder::SetBigPictureLayout(std::shared_ptr<NotificationConten
     }
 
     if (!largeIcon.empty()) {
-        // builder.setLargeIcon(largeIcon);
+        builder += LR"(<image placement="appLogoOverride" hint-crop=")" + std::wstring(contentModel->roundedLargeIcon ? L"circle" : L"default") + LR"(" src=")" + largeIcon + LR"("/>)";
     }
 
     if (bigPicture.empty())
         return false;
 
-    //NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
-
-    //bigPictureStyle.bigPicture(bigPicture);
-    //bigPictureStyle.bigLargeIcon(contentModel->hideLargeIconOnExpand ? "" : largeIcon);
-
     if (!contentModel->title.empty()) {
         auto contentTitle = HtmlUtils::FromHtml(contentModel->title);
-        //bigPictureStyle.setBigContentTitle(contentTitle);
+        builder += LR"(<text>)" + contentTitle + LR"("</text>)";
     }
+
+    builder += LR"(<image placement="hero" hint-crop=")" + std::wstring(contentModel->roundedBigPicture ? L"circle" : L"default") + LR"(" src=")" + bigPicture + LR"("/>)";
 
     if (!contentModel->body.empty()) {
         auto summaryText = HtmlUtils::FromHtml(contentModel->body);
-        //bigPictureStyle.setSummaryText(summaryText);
+        builder += LR"(<text>)" + summaryText + LR"("</text>)";
     }
-
-    //builder.setStyle(bigPictureStyle);
 
     return true;
 }

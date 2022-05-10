@@ -6,6 +6,9 @@
 #include <optional>
 #include <map>
 #include <memory>
+#include <functional>
+#include <algorithm>
+#include <iostream>
 #include <exception>
 #include "../../utils/JsonUtils.h"
 #include "../../utils/MapUtils.h"
@@ -62,21 +65,24 @@ class AbstractModel {
     }
 
     template<typename T>
-    static std::optional<T> GetEnumValueOrDefault(const flutter::EncodableMap& arguments, std::string reference) {
-        //std::optional<std::string> key = MapUtils::ExtractValue<std::string>(arguments, reference);
+    static std::optional<T> GetEnumValueOrDefault(const flutter::EncodableMap& arguments, std::string reference, std::initializer_list<T> all, std::function<std::string(T)> toString) {
+        std::optional<std::string> key = MapUtils::ExtractValue<std::string>(arguments, reference);
         std::optional<T> defaultValue = MapUtils::ExtractEnumValue<T>(Definitions::initialValues, reference);
-        // if (!key.has_value()) {
-        //     return defaultValue;
-        // }
-
-        // TODO: How to get enum from string?
-        /*
-        for (int i = 0 ; i<values.count();i++){
-            auto enumValue = values.at(i);
-            if(enumValue.toString().toLowerCase().equals(key.toLowerCase()))
-                return enumValue;
+        if (!key.has_value()) {
+            return defaultValue;
         }
-        */
+
+        std::string str = key.value();
+        std::transform(str.begin(), str.end(), str.begin(), [](int c) -> char { return static_cast<char>(::tolower(c)); });
+
+        for (const auto enumValue : all) {
+            std::string str2 = toString(enumValue);
+            std::transform(str2.begin(), str2.end(), str2.begin(), [](int c) -> char { return static_cast<char>(::tolower(c)); });
+            
+            if(str.compare(str2) == 0) {
+                return enumValue;
+            }
+        }
 
         return defaultValue;
     }

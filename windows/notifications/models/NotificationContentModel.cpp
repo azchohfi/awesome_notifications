@@ -23,11 +23,11 @@ void NotificationContentModel::FromMap(const flutter::EncodableMap& arguments) {
 
     displayedDate = MapUtils::ExtractValue<std::string>(arguments, Definitions::NOTIFICATION_DISPLAYED_DATE);
 
-    createdLifeCycle = GetEnumValueOrDefault<NotificationLifeCycle>(arguments, Definitions::NOTIFICATION_CREATED_LIFECYCLE);
+    createdLifeCycle = GetEnumValueOrDefault<NotificationLifeCycle>(arguments, Definitions::NOTIFICATION_CREATED_LIFECYCLE, All_NotificationLifeCycle, NotificationLifeCycleToString);
 
-    displayedLifeCycle = GetEnumValueOrDefault<NotificationLifeCycle>(arguments, Definitions::NOTIFICATION_DISPLAYED_LIFECYCLE);
+    displayedLifeCycle = GetEnumValueOrDefault<NotificationLifeCycle>(arguments, Definitions::NOTIFICATION_DISPLAYED_LIFECYCLE, All_NotificationLifeCycle, NotificationLifeCycleToString);
 
-    createdSource = GetEnumValueOrDefault<NotificationSource>(arguments, Definitions::NOTIFICATION_CREATED_SOURCE);
+    createdSource = GetEnumValueOrDefault<NotificationSource>(arguments, Definitions::NOTIFICATION_CREATED_SOURCE, All_NotificationSource, NotificationSourceToString);
 
     channelKey = GetValueOrDefault<std::string>(arguments, Definitions::NOTIFICATION_CHANNEL_KEY).value();
     color = GetValueOrDefault<int64_t>(arguments, Definitions::NOTIFICATION_COLOR, 0);
@@ -52,13 +52,13 @@ void NotificationContentModel::FromMap(const flutter::EncodableMap& arguments) {
     hideLargeIconOnExpand = GetValueOrDefault<bool>(arguments, Definitions::NOTIFICATION_HIDE_LARGE_ICON_ON_EXPAND, false);
 
     notificationLayout =
-            GetEnumValueOrDefault<NotificationLayout>(arguments, Definitions::NOTIFICATION_LAYOUT);
+            GetEnumValueOrDefault<NotificationLayout>(arguments, Definitions::NOTIFICATION_LAYOUT, All_NotificationLayout, NotificationLayoutToString);
 
     privacy =
-            GetEnumValueOrDefault<NotificationPrivacy>(arguments, Definitions::NOTIFICATION_PRIVACY);
+            GetEnumValueOrDefault<NotificationPrivacy>(arguments, Definitions::NOTIFICATION_PRIVACY, All_NotificationPrivacy, NotificationPrivacyToString);
 
     category =
-            GetEnumValueOrDefault<NotificationCategory>(arguments, Definitions::NOTIFICATION_CATEGORY);
+            GetEnumValueOrDefault<NotificationCategory>(arguments, Definitions::NOTIFICATION_CATEGORY, All_NotificationCategory, NotificationCategoryToString);
 
     privateMessage = GetValueOrDefault<std::string>(arguments, Definitions::NOTIFICATION_PRIVATE_MESSAGE, "");
 

@@ -38,3 +38,5 @@ std::string NotificationPrivacyToString(NotificationPrivacy notificationPrivacy)
 //             //return Notification.VISIBILITY_PRIVATE;
 //     }
 // }
+
+constexpr std::initializer_list<NotificationPrivacy> All_NotificationPrivacy = { NotificationPrivacy::Secret, NotificationPrivacy::Private, NotificationPrivacy::Public };

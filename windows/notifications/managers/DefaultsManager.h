@@ -4,19 +4,18 @@
 
 #include "../../definitions.h"
 #include "../models/DefaultsModel.h"
+#include "SharedManager.h"
 
 class DefaultsManager {
  private:
-    // static inline SharedManager<DefaultsModel> shared(
-    //                 "DefaultsManager",
-    //                 "DefaultsModel");
+    static SharedManager<DefaultsModel> shared;
  public:
 
     static bool RemoveDefault();
 
     static void SaveDefault(const DefaultsModel& defaults);
 
-    static DefaultsModel GetDefaultByKey();
+    static std::optional<DefaultsModel> GetDefaultByKey();
 
     static std::string GetDefaultIconByKey();
 

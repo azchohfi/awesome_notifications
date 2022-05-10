@@ -106,15 +106,15 @@ void NotificationChannelModel::FromMap(const flutter::EncodableMap& arguments) {
     ledOnMs      = GetValueOrDefault<int>(arguments, Definitions::NOTIFICATION_LED_ON_MS, 0);
     ledOffMs     = GetValueOrDefault<int>(arguments, Definitions::NOTIFICATION_LED_OFF_MS, 0);
 
-    importance = GetEnumValueOrDefault<NotificationImportance>(arguments, Definitions::NOTIFICATION_IMPORTANCE);
+    importance = GetEnumValueOrDefault<NotificationImportance>(arguments, Definitions::NOTIFICATION_IMPORTANCE, All_NotificationImportance, NotificationImportanceToString);
 
-    groupSort = GetEnumValueOrDefault<GroupSort>(arguments, Definitions::NOTIFICATION_GROUP_SORT);
+    groupSort = GetEnumValueOrDefault<GroupSort>(arguments, Definitions::NOTIFICATION_GROUP_SORT, All_GroupSort, GroupSortToString);
 
-    groupAlertBehavior = GetEnumValueOrDefault<GroupAlertBehaviour>(arguments, Definitions::NOTIFICATION_GROUP_ALERT_BEHAVIOR);
+    groupAlertBehavior = GetEnumValueOrDefault<GroupAlertBehaviour>(arguments, Definitions::NOTIFICATION_GROUP_ALERT_BEHAVIOR, All_GroupAlertBehaviour, GroupAlertBehaviourToString);
 
-    defaultPrivacy = GetEnumValueOrDefault<NotificationPrivacy>(arguments, Definitions::NOTIFICATION_DEFAULT_PRIVACY);
+    defaultPrivacy = GetEnumValueOrDefault<NotificationPrivacy>(arguments, Definitions::NOTIFICATION_DEFAULT_PRIVACY, All_NotificationPrivacy, NotificationPrivacyToString);
 
-    defaultRingtoneType = GetEnumValueOrDefault<DefaultRingtoneType>(arguments, Definitions::NOTIFICATION_DEFAULT_RINGTONE_TYPE);
+    defaultRingtoneType = GetEnumValueOrDefault<DefaultRingtoneType>(arguments, Definitions::NOTIFICATION_DEFAULT_RINGTONE_TYPE, All_DefaultRingtoneType, DefaultRingtoneTypeToString);
 
     groupKey = GetValueOrDefault<std::string>(arguments, Definitions::NOTIFICATION_GROUP_KEY);
 
