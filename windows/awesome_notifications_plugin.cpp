@@ -20,6 +20,7 @@
 #include <winrt/base.h>
 #include <winrt/Windows.Foundation.h>
 #include <MddBootstrap.h>
+#include <WindowsAppSDK-VersionInfo.h>
 #include <winrt/Microsoft.Windows.AppNotifications.h>
 
 #include "notifications/models/NotificationModel.h"
@@ -307,17 +308,14 @@ void AwesomeNotificationsPlugin::channelMethodInitialize(const flutter::MethodCa
     bool isPackaged{ IsPackagedProcess() };
     if (!isPackaged)
     {
-        const UINT32 majorMinorVersion{ 0x00010001 };
-        PCWSTR versionTag{ L"" };
-        const PACKAGE_VERSION minVersion{};
-
-        const HRESULT hr{ MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion) };
+        const PACKAGE_VERSION minVersion{Microsoft::WindowsAppSDK::Runtime::Version::UInt64};
+        HRESULT hr{ MddBootstrapInitialize(Microsoft::WindowsAppSDK::Release::MajorMinor, Microsoft::WindowsAppSDK::Release::VersionTag, minVersion) };
 
         // Check the return code for errors. If there is an error, display the result.
         if (FAILED(hr))
         {
             wprintf(L"Error 0x%X in MddBootstrapInitialize(0x%08X, %s, %hu.%hu.%hu.%hu)\n",
-                hr, majorMinorVersion, versionTag, minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+                hr, Microsoft::WindowsAppSDK::Release::MajorMinor, Microsoft::WindowsAppSDK::Release::VersionTag, minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
             result->Success(false);
             return;
         }

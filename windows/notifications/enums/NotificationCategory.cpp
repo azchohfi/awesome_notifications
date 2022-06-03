@@ -1,5 +1,4 @@
 #include <string>
-#include <algorithm>
 #include <string.h>
 
 #include "NotificationCategory.h"

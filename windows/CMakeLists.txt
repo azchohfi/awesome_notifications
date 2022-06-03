@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 set(PROJECT_NAME "awesome_notifications")
 set(CPPWINRT_VERSION "2.0.220325.3")
 set(WIL_VERSION "1.0.220201.1")
-set(WAS_VERSION "1.1.0-preview3")
+set(WAS_VERSION "1.1.0")
 project(${PROJECT_NAME} LANGUAGES CXX)
 include(FetchContent)
 
@@ -14,8 +14,8 @@ FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download
 FetchContent_MakeAvailable(json)
 
 FetchContent_Declare(nuget
-  URL "https://dist.nuget.org/win-x86-commandline/v6.0.0/nuget.exe"
-  URL_HASH SHA256=04eb6c4fe4213907e2773e1be1bbbd730e9a655a3c9c58387ce8d4a714a5b9e1
+  URL "https://dist.nuget.org/win-x86-commandline/v6.2.0/nuget.exe"
+  URL_HASH SHA256=C89875D937B7FAFF3AC024C3CEECEAAECBD786C47B33C09DD4129275A405594B
   DOWNLOAD_NO_EXTRACT true
 )
 
